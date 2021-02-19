@@ -11,33 +11,36 @@ td {
 table {
   position: relative;
 }
-thead[is='aha-table-drag-handles'] {
+/* thead[is='aha-table-drag-handles'],
+thead[is='aha-table-drag-handles'] tr {
   position: absolute;
   top: 0;
   bottom: 0;
   left: 0;
   right: 0;
-}
+} */
 thead[is='aha-table-drag-handles'] th {
-  border-color: transparent !important;
+  /* border-color: transparent !important; */
   padding: 0 !important;
-  /* height: 100px !important; */
+  height: 20px !important;
+  background: yellow;
   border-top-color: transparent !important;
-  position: initial !important;
+  position: relative !important;
   /* width: calc(1% * var(--width)); */
   /* position: relative; */
-  pointer-events: none;
+  /* pointer-events: none; */
 }
 thead[is='aha-table-drag-handles'] th div {
-  pointer-events: all;
+  /* pointer-events: all; */
   position: absolute;
   z-index: 10;
   top: 0;
-  bottom: 0;
-  /* right: -1px; */
+  /* bottom: 0; */
+  height: calc(1px * var(--table-height));
+  right: -1px;
   /* right: calc(var(--right) * 1px); */
   /* left: calc((1px * var(--right)) - 1px); */
   border-left: 1px solid red;
-  height: 100%;
   cursor: ew-resize;
+  /* display: none; */
 }

@@ -41,11 +41,9 @@ export class AhaTableDragHandles extends HTMLTableSectionElement {
   constructor() {
     super();
 
-    this.table = this.closest('table');
     this.leftHandle = true;
     this.rightHandle = true;
     this.units = '%';
-    this.createDragHandles();
 
     // this.addEventListener('mousedown', e => {
     //   const cell = e.target.closest('th');
@@ -58,6 +56,16 @@ export class AhaTableDragHandles extends HTMLTableSectionElement {
     //   childList: true,
     //   subtree: true,
     // });
+  }
+
+  connectedCallback() {
+    this.table = this.closest('table');
+    this.createDragHandles();
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      this.table.style.setProperty('--table-height', this.table.offsetHeight);
+    });
+    resizeObserver.observe(this.table);
   }
 
   convertAttrToProp(attr) {
@@ -171,8 +179,8 @@ export class DragHandle extends HTMLTableCellElement {
   connectedCallback() {
     this._width = (this.offsetWidth / this.table.offsetWidth) * 100;
     this.width = `${this._width}%`;
-    this._left = (this.previousElementSibling?._left || 0) + this._width;
-    this.handle.style.left = `${this._left}%`;
+    // this._left = (this.previousElementSibling?._left || 0) + this._width;
+    // this.handle.style.left = `${this._left}%`;
   }
 }
 customElements.define('drag-handle', DragHandle, {
