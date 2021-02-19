@@ -1,1 +1,2 @@
-import './app-root';
+// import './app-root';
+import './drag-handles';
