@@ -147,13 +147,12 @@ export class DragHandle extends HTMLTableCellElement {
     this.handle = document.createElement('div');
     this.appendChild(this.handle);
 
-    this.table = this.closest('table');
-
-    const reactiveElem = reactiveProps({ dom: true });
-    const watchedProps = {
-      width: undefined,
-    };
-    // this.width = `${(this.offsetWidth / table.offsetWidth) * 100}%`;
+    // const reactiveElem = reactiveProps({ dom: true });
+    // const watchedProps = {
+    //   width: undefined,
+    // };
+    // this.table = this.closest('table');
+    // this.width = `${(this.offsetWidth / this.table.offsetWidth) * 100}%`;
 
     // this.style.setProperty('--width', width);
 
@@ -163,24 +162,45 @@ export class DragHandle extends HTMLTableCellElement {
     //   this.previousElementSibling?.style?.getPropertyValue('--right') || 0,
     // ) + width,
 
-    reactiveElem(this, watchedProps, () => {
-      // debugger;
-    });
-
-    this.addEventListener('mouseenter', (e) => {
-      const cell = e.currentTarget;
-
-      // const mouseDownEvent = new MouseEvent('down');
-      // const touchStartEvent = new TouchEvent('touchstart');
-      // cell.dispatchEvent(e);
-    });
+    // reactiveElem(this, watchedProps, () => {
+    //   // debugger;
+    // });
   }
 
   connectedCallback() {
-    this._width = (this.offsetWidth / this.table.offsetWidth) * 100;
-    this.width = `${this._width}%`;
+    this.table = this.closest('table');
+    this.width = `${(this.offsetWidth / this.table.offsetWidth) * 100}%`;
+
     // this._left = (this.previousElementSibling?._left || 0) + this._width;
     // this.handle.style.left = `${this._left}%`;
+
+    this.addEventListener('mousedown', (downEvent) => {
+      if (downEvent.button !== 0) return;
+
+      // this.closest('tr').children.forEach(node => {
+      //   node.width = node.offsetWidth;
+      // });
+
+      this.table.style.width = `${this.table.offsetWidth}px`;
+      // const initialWidth = downEvent.currentTarget.offsetWidth;
+      let intialX = downEvent.pageX;
+      const moveEvent = (e) => {
+        const delta = intialX - e.pageX;
+        // console.log(this.width, delta, this.table.offsetWidth);
+        const nextElem = this.nextElementSibling;
+        const pxWidth = this.offsetWidth;
+        nextElem.width = `${pxWidth + delta}px`;
+        this.width = `${pxWidth - delta}px`;
+      };
+      document.addEventListener('mousemove', moveEvent);
+      document.addEventListener(
+        'mouseup',
+        () => {
+          document.removeEventListener('mousemove', moveEvent);
+        },
+        { once: true },
+      );
+    });
   }
 }
 customElements.define('drag-handle', DragHandle, {
