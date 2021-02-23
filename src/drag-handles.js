@@ -169,7 +169,6 @@ export class DragHandle extends HTMLTableCellElement {
 
   connectedCallback() {
     this.table = this.closest('table');
-    this.width = `${(this.offsetWidth / this.table.offsetWidth) * 100}%`;
 
     // this._left = (this.previousElementSibling?._left || 0) + this._width;
     // this.handle.style.left = `${this._left}%`;
@@ -177,20 +176,26 @@ export class DragHandle extends HTMLTableCellElement {
     this.addEventListener('mousedown', (downEvent) => {
       if (downEvent.button !== 0) return;
 
-      // this.closest('tr').children.forEach(node => {
-      //   node.width = node.offsetWidth;
-      // });
+      Array.from(this.closest('tr').children).forEach((node) => {
+        node.width = `${node.getBoundingClientRect().width}px`;
+      });
+      // this.width = `${this.getBoundingClientRect().width}px`;
 
-      this.table.style.width = `${this.table.offsetWidth}px`;
+      this.table.style.width = `${this.table.getBoundingClientRect().width}px`;
+      // this.table.style.tableLayout = 'fixed';
       // const initialWidth = downEvent.currentTarget.offsetWidth;
       let intialX = downEvent.pageX;
+      let initialWidth = this.getBoundingClientRect().width;
+      const nextElem = this.nextElementSibling;
+      let initialNextElmWidth = nextElem.getBoundingClientRect().width;
+
       const moveEvent = (e) => {
-        const delta = intialX - e.pageX;
+        const delta = e.pageX - intialX;
         // console.log(this.width, delta, this.table.offsetWidth);
-        const nextElem = this.nextElementSibling;
-        const pxWidth = this.offsetWidth;
-        nextElem.width = `${pxWidth + delta}px`;
-        this.width = `${pxWidth - delta}px`;
+        // const nextElem = this.nextElementSibling;
+        nextElem.width = `${initialNextElmWidth - delta}px`;
+        // nextElem.width = `${nextElem.getBoundingClientRect().width - delta}px`;
+        this.width = `${initialWidth + delta}px`;
       };
       document.addEventListener('mousemove', moveEvent);
       document.addEventListener(
