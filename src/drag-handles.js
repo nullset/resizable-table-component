@@ -176,7 +176,8 @@ export class DragHandle extends HTMLTableCellElement {
     this.addEventListener('mousedown', (downEvent) => {
       if (downEvent.button !== 0) return;
 
-      Array.from(this.closest('tr').children).forEach((node) => {
+      const row = this.closest('tr');
+      Array.from(row.children).forEach((node) => {
         node.width = `${node.getBoundingClientRect().width}px`;
       });
       // this.width = `${this.getBoundingClientRect().width}px`;
@@ -186,22 +187,26 @@ export class DragHandle extends HTMLTableCellElement {
       // const initialWidth = downEvent.currentTarget.offsetWidth;
       let intialX = downEvent.pageX;
       let initialWidth = this.getBoundingClientRect().width;
-      const nextElem = this.nextElementSibling;
-      let initialNextElmWidth = nextElem.getBoundingClientRect().width;
 
       const moveEvent = (e) => {
         const delta = e.pageX - intialX;
-        // console.log(this.width, delta, this.table.offsetWidth);
-        // const nextElem = this.nextElementSibling;
-        nextElem.width = `${initialNextElmWidth - delta}px`;
-        // nextElem.width = `${nextElem.getBoundingClientRect().width - delta}px`;
+        // Draw the new width based on the drag amount.
         this.width = `${initialWidth + delta}px`;
+
+        // Redraw the width based on the actual rendered value afther the above width is set.
+        this.width = `${this.getBoundingClientRect().width}px`;
       };
       document.addEventListener('mousemove', moveEvent);
       document.addEventListener(
         'mouseup',
         () => {
           document.removeEventListener('mousemove', moveEvent);
+          const tableWidth = this.table.getBoundingClientRect().width;
+          Array.from(row.children).forEach((node) => {
+            node.width = `${
+              (node.getBoundingClientRect().width / tableWidth) * 100
+            }%`;
+          });
         },
         { once: true },
       );
