@@ -141,6 +141,8 @@ export class DragHandle extends HTMLTableCellElement {
     return ['width'];
   }
 
+  spacerClassName = 'aha-table-drag-handle__spacer';
+
   constructor() {
     super();
 
@@ -168,6 +170,10 @@ export class DragHandle extends HTMLTableCellElement {
     // });
   }
 
+  findSpacer() {
+    return this.querySelector(`:scope .${this.spacerClassName}`);
+  }
+
   connectedCallback() {
     this.table = this.closest('table');
 
@@ -180,26 +186,26 @@ export class DragHandle extends HTMLTableCellElement {
       const row = this.closest('tr');
       // const foo = this.table.getBoundingClientRect().width;
       Array.from(row.children).forEach((node) => {
-        if (node === this) return;
-        const div = document.createElement('div');
-        div.classList.add('aha-table-drag-handle__spacer');
-        const nodeWidth = `${node.getBoundingClientRect().width}px`;
-        div.style.width = nodeWidth;
-        // div.style.maxWidth = nodeWidth;
-        node.appendChild(div);
+        let spacer = node.findSpacer();
+
+        // If node is the element being resized, remove the spacer.
+        if (node === this) {
+          if (spacer) spacer.remove();
+          return;
+        }
+
+        // If node is NOT the element being resized, add a spacer to ensure width does not change on reflow.
+        if (!spacer) {
+          spacer = document.createElement('div');
+          spacer.classList.add(this.spacerClassName);
+          node.appendChild(spacer);
+        }
+        spacer.style.width = `${node.getBoundingClientRect().width}px`;
         // node.width = `${node.getBoundingClientRect().width}px`;
         // node.width = `${(node.getBoundingClientRect().width / foo) * 100}%`;
       });
       // this.width = `${this.getBoundingClientRect().width}px`;
 
-      const tableWidth = this.table.getBoundingClientRect().width;
-      // const tablePercent =
-      //   (tableWidth / this.table.parentElement.getBoundingClientRect().width) *
-      //   100;
-      // // this.table.width = `${tablePercent}%`;
-
-      // this.table.style.tableLayout = 'fixed';
-      // const initialWidth = downEvent.currentTarget.offsetWidth;
       let intialX = downEvent.pageX;
       let initialWidth = this.getBoundingClientRect().width;
 
@@ -210,31 +216,17 @@ export class DragHandle extends HTMLTableCellElement {
 
         // Redraw the width based on the actual rendered value afther the above width is set.
         // this.width = `${this.getBoundingClientRect().width}px`;
-        this.width = `${
-          (this.getBoundingClientRect().width /
-            this.table.getBoundingClientRect().width) *
-          100
-        }%`;
+        // this.width = `${
+        //   (this.getBoundingClientRect().width /
+        //     this.table.getBoundingClientRect().width) *
+        //   100
+        // }%`;
       };
       document.addEventListener('mousemove', moveEvent);
       document.addEventListener(
         'mouseup',
         () => {
-          Array.from(row.children).forEach((node) => {
-            // node.width = `${node.getBoundingClientRect().width}px`;
-          });
           document.removeEventListener('mousemove', moveEvent);
-          // const tableWidth = this.table.getBoundingClientRect().width;
-          // debugger;
-          // this.width = `${
-          //   (this.getBoundingClientRect().width / tableWidth) * 100
-          // }%`;
-
-          // Array.from(row.children).forEach((node) => {
-          //   node.width = `${
-          //     (node.getBoundingClientRect().width / tableWidth) * 100
-          //   }%`;
-          // });
         },
         { once: true },
       );
