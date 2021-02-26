@@ -10,6 +10,7 @@ td {
 
 table {
   position: relative;
+  max-width: 100000px;
 }
 /* thead[is='aha-table-drag-handles'],
 thead[is='aha-table-drag-handles'] tr {
@@ -30,7 +31,7 @@ thead[is='aha-table-drag-handles'] th {
   /* position: relative; */
   /* pointer-events: none; */
 }
-thead[is='aha-table-drag-handles'] th div {
+thead[is='aha-table-drag-handles'] th .aha-table-drag-handle {
   /* pointer-events: all; */
   position: absolute;
   z-index: 10;

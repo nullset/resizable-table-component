@@ -145,6 +145,7 @@ export class DragHandle extends HTMLTableCellElement {
     super();
 
     this.handle = document.createElement('div');
+    this.handle.classList.add('aha-table-drag-handle');
     this.appendChild(this.handle);
 
     // const reactiveElem = reactiveProps({ dom: true });
@@ -177,14 +178,27 @@ export class DragHandle extends HTMLTableCellElement {
       if (downEvent.button !== 0) return;
 
       const row = this.closest('tr');
+      // const foo = this.table.getBoundingClientRect().width;
       Array.from(row.children).forEach((node) => {
-        node.width = `${node.getBoundingClientRect().width}px`;
+        if (node === this) return;
+        const div = document.createElement('div');
+        div.classList.add('aha-table-drag-handle__spacer');
+        const nodeWidth = `${node.getBoundingClientRect().width}px`;
+        div.style.width = nodeWidth;
+        // div.style.maxWidth = nodeWidth;
+        node.appendChild(div);
+        // node.width = `${node.getBoundingClientRect().width}px`;
+        // node.width = `${(node.getBoundingClientRect().width / foo) * 100}%`;
       });
       // this.width = `${this.getBoundingClientRect().width}px`;
 
       const tableWidth = this.table.getBoundingClientRect().width;
+      // const tablePercent =
+      //   (tableWidth / this.table.parentElement.getBoundingClientRect().width) *
+      //   100;
+      // // this.table.width = `${tablePercent}%`;
 
-      this.table.style.tableLayout = 'fixed';
+      // this.table.style.tableLayout = 'fixed';
       // const initialWidth = downEvent.currentTarget.offsetWidth;
       let intialX = downEvent.pageX;
       let initialWidth = this.getBoundingClientRect().width;
@@ -195,14 +209,19 @@ export class DragHandle extends HTMLTableCellElement {
         this.width = `${initialWidth + delta}px`;
 
         // Redraw the width based on the actual rendered value afther the above width is set.
-        this.width = `${this.getBoundingClientRect().width}px`;
+        // this.width = `${this.getBoundingClientRect().width}px`;
+        this.width = `${
+          (this.getBoundingClientRect().width /
+            this.table.getBoundingClientRect().width) *
+          100
+        }%`;
       };
       document.addEventListener('mousemove', moveEvent);
       document.addEventListener(
         'mouseup',
         () => {
           Array.from(row.children).forEach((node) => {
-            node.width = `${node.getBoundingClientRect().width}px`;
+            // node.width = `${node.getBoundingClientRect().width}px`;
           });
           document.removeEventListener('mousemove', moveEvent);
           // const tableWidth = this.table.getBoundingClientRect().width;
