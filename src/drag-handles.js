@@ -182,8 +182,9 @@ export class DragHandle extends HTMLTableCellElement {
       });
       // this.width = `${this.getBoundingClientRect().width}px`;
 
-      this.table.style.width = `${this.table.getBoundingClientRect().width}px`;
-      // this.table.style.tableLayout = 'fixed';
+      const tableWidth = this.table.getBoundingClientRect().width;
+
+      this.table.style.tableLayout = 'fixed';
       // const initialWidth = downEvent.currentTarget.offsetWidth;
       let intialX = downEvent.pageX;
       let initialWidth = this.getBoundingClientRect().width;
@@ -200,13 +201,21 @@ export class DragHandle extends HTMLTableCellElement {
       document.addEventListener(
         'mouseup',
         () => {
-          document.removeEventListener('mousemove', moveEvent);
-          const tableWidth = this.table.getBoundingClientRect().width;
           Array.from(row.children).forEach((node) => {
-            node.width = `${
-              (node.getBoundingClientRect().width / tableWidth) * 100
-            }%`;
+            node.width = `${node.getBoundingClientRect().width}px`;
           });
+          document.removeEventListener('mousemove', moveEvent);
+          // const tableWidth = this.table.getBoundingClientRect().width;
+          // debugger;
+          // this.width = `${
+          //   (this.getBoundingClientRect().width / tableWidth) * 100
+          // }%`;
+
+          // Array.from(row.children).forEach((node) => {
+          //   node.width = `${
+          //     (node.getBoundingClientRect().width / tableWidth) * 100
+          //   }%`;
+          // });
         },
         { once: true },
       );
